@@ -7,8 +7,8 @@ import org.apache.flink.shaded.jackson2.com.fasterxml.jackson.databind.JsonNode;
 import org.apache.flink.shaded.jackson2.com.fasterxml.jackson.databind.ObjectMapper;
 
 public class Tweet {
-
-	 private String text;
+	
+	 	String text;
 	    private String userName;
 	    public String rawText;
 	    public String lang;
@@ -68,10 +68,10 @@ public class Tweet {
 	    @Override
 	    public String toString() {
 	        return 
-	      		this.userName+ "; "
-                +this.lang + "; "
-                +this.source + "; "
-	            + this.text + "; "
+	//      		this.userName+ "; "
+    //            +this.lang + "; "
+    //           +this.source + "; "
+	             this.text + "; "
 	        	+this.id+";";
 	     //   	+this.rawText + " ";
 	    }

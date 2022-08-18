@@ -18,17 +18,23 @@
 
 package twitter_streaming;
 
+import org.apache.flink.api.common.functions.FilterFunction;
 import org.apache.flink.api.common.functions.FlatMapFunction;
 import org.apache.flink.api.common.functions.MapFunction;
+import org.apache.flink.api.common.serialization.SimpleStringEncoder;
 import org.apache.flink.api.java.functions.KeySelector;
 import org.apache.flink.api.java.tuple.Tuple2;
 import org.apache.flink.configuration.ConfigConstants;
 import org.apache.flink.configuration.Configuration;
+import org.apache.flink.core.fs.Path;
 import org.apache.flink.streaming.api.datastream.DataStream;
 import org.apache.flink.streaming.api.environment.StreamExecutionEnvironment;
+import org.apache.flink.streaming.api.functions.sink.SinkFunction;
+import org.apache.flink.streaming.api.functions.sink.filesystem.StreamingFileSink;
 import org.apache.flink.streaming.api.windowing.assigners.TumblingProcessingTimeWindows;
 import org.apache.flink.streaming.api.windowing.time.Time;
 import org.apache.flink.streaming.connectors.twitter.TwitterSource;
+import org.apache.flink.streaming.util.functions.StreamingFunctionUtils;
 import org.apache.flink.util.Collector;
 
 import java.util.Properties;
@@ -58,25 +64,31 @@ public class StreamingJob {
 		//Read the twitter keys from config file, environment variable or ...
 		Properties twitterCredentials = getTwitterCredentials();
 		DataStream<String> tweetStream = env.addSource(new TwitterSource(twitterCredentials));
+		
+		final StreamingFileSink<Object> sink = StreamingFileSink
+				.forRowFormat(new Path("C:\\Users\\vpsqu\\OneDrive\\Documents\\Work"), new SimpleStringEncoder<>("UTF-8"))
+				.build();
+
+			
 
 		tweetStream
 				.flatMap(new TweetParser())
-				.map(new TweetKeyValue())
-				.keyBy(new KeySelector<Tuple2<Tweet, Integer>, String>() {
-					/**
-					 * 
-					 */
-					private static final long serialVersionUID = 1L;
-
-					
-					public String getKey(Tuple2<Tweet, Integer> tweetIntegerTuple2) throws Exception {
-						return tweetIntegerTuple2.f0.source;
-					}
-				})
-				.window(TumblingProcessingTimeWindows.of(Time.seconds(60)))
-				.sum(1)
+				.filter(t -> t.text.contains("queer"))
+//				.map(new TweetKeyValue())
+//				.keyBy(new KeySelector<Tuple2<Tweet, Integer>, String>() {
+//					/**
+//					 * ;
+//					 */
+//					private static final long serialVersionUID = 1L;
+//
+//					
+//					public String getKey(Tuple2<Tweet, Integer> tweetIntegerTuple2) throws Exception {
+//						return tweetIntegerTuple2.f0.source;
+//					}
+//				})
+//				.window(TumblingProcessingTimeWindows.of(Time.seconds(10)))
+//				.sum(1)
 				.print();
-
 
 		/*
 		 * Here, you can start creating your execution plan for Flink.
@@ -102,6 +114,21 @@ public class StreamingJob {
 		env.execute("Flink Streaming Java API Skeleton");
 	}
 
+	public static class TweetFilter implements FilterFunction<Tweet>{
+
+		/**
+		 * 
+		 */
+		private static final long serialVersionUID = 1816379908445869140L;
+
+		@Override
+		public boolean filter(Tweet value) throws Exception {
+			// TODO Auto-generated method stub
+			
+			return false;
+		}
+	
+	}
 	public static class TweetKeyValue implements MapFunction<Tweet, Tuple2<Tweet, Integer>>{
 
 		/**
