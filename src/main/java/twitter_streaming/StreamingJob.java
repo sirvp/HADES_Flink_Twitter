@@ -17,7 +17,7 @@
  */
 
 package twitter_streaming;
-
+import twitter_streaming.HttpClientCall;
 import org.apache.flink.api.common.functions.FilterFunction;
 import org.apache.flink.api.common.functions.FlatMapFunction;
 import org.apache.flink.api.common.functions.MapFunction;
@@ -69,11 +69,13 @@ public class StreamingJob {
 				.forRowFormat(new Path("C:\\Users\\vpsqu\\OneDrive\\Documents\\Work"), new SimpleStringEncoder<>("UTF-8"))
 				.build();
 
-			
+		HttpClientCall.getPrediction();	
 
 		tweetStream
 				.flatMap(new TweetParser())
-				.filter(t -> t.text.contains("queer"))
+				.filter(t -> t.location.contains("United Kingdom"))
+				.map(new TweetPreProcessor())
+				.map(new classPredictor())
 //				.map(new TweetKeyValue())
 //				.keyBy(new KeySelector<Tuple2<Tweet, Integer>, String>() {
 //					/**
@@ -115,7 +117,6 @@ public class StreamingJob {
 	}
 
 	public static class TweetFilter implements FilterFunction<Tweet>{
-
 		/**
 		 * 
 		 */
