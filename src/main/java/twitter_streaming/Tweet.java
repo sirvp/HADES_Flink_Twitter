@@ -13,7 +13,7 @@ public class Tweet {
 	    public String rawText;
 	    public String lang;
 	    public String id;
-	    public String source;
+	    public String location;
 
 	    private Tweet() {
 	    }
@@ -34,24 +34,10 @@ public class Tweet {
 	                JsonNode userNode = node.get("user");
 	                tweet.text = node.get("text").asText();
 	                
-	                tweet.userName = userNode.get("name").asText();
+	                tweet.userName = userNode.get("screen_name").asText();
 	                tweet.lang = userNode.get("lang").asText();
 	                tweet.id = node.get("id_str").asText();
-	                if(node.has("source")){
-
-	                    String source = node.get("source").asText().toLowerCase();
-	                    if(source.contains("android"))
-	                        source = "Android";
-	                    else if (source.contains("iphone"))
-	                        source="iphone";
-	                    else if (source.contains("web"))
-	                        source="web";
-	                    else
-	                        source="unknown";
-
-	                    tweet.source =source;
-	                }
-
+	                tweet.location = userNode.get("location").asText();
 
 	                return tweet;
 	            }
@@ -71,8 +57,10 @@ public class Tweet {
 	//      		this.userName+ "; "
     //            +this.lang + "; "
     //           +this.source + "; "
-	             this.text + "; "
-	        	+this.id+";";
+	            this.userName+";"
+    			+this.text + "; "
+	        	+this.id+";"
+	        	+this.location;
 	     //   	+this.rawText + " ";
 	    }
 }
