@@ -8,9 +8,8 @@ import java.net.http.HttpResponse;
 
 import org.apache.flink.api.common.functions.MapFunction;
 
-/*
+/**
  * Map Function to Pre-Process Tweets using the Spacy Text Processing Pipeline created for Model Training.
- * 
  * Function not used in current iteration.
  */
 

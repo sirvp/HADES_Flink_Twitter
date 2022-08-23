@@ -7,7 +7,7 @@ import org.apache.flink.shaded.jackson2.com.fasterxml.jackson.core.JsonProcessin
 import org.apache.flink.shaded.jackson2.com.fasterxml.jackson.databind.JsonNode;
 import org.apache.flink.shaded.jackson2.com.fasterxml.jackson.databind.ObjectMapper;
 
-/* Tweet Object to store attributes of tweets obtained from Twitter API
+/** Tweet Object to store attributes of tweets obtained from Twitter API
  * 
  */
 public class Tweet implements Serializable {

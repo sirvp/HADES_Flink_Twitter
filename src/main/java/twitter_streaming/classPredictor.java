@@ -8,12 +8,14 @@ import java.net.http.HttpResponse;
 import org.apache.flink.api.common.functions.MapFunction;
 
 
+/**
+ * Map Function to Obtain Predicted Class of each Tweet from a pre-trained Classification Model.
+ * Function takes in a Tweet object, adds the predicted category and returns the modified Tweet object
+ * 
+ */
+
 public class classPredictor implements MapFunction<Tweet, Tweet> {
 
-	/**Map Function to Obtain Predicted Class of each Tweet from a pre-trained Classification Model.
-	 * Function takes in a Tweet object, adds the predicted category and returns the modified Tweet object
-	 * 
-	 */
 	private static final long serialVersionUID = 1L;
 
 	@Override
