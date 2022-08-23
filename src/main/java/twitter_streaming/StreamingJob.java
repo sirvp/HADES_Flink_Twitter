@@ -17,20 +17,13 @@
  */
 
 package twitter_streaming;
-import org.apache.flink.api.common.functions.FilterFunction;
 import org.apache.flink.api.common.functions.FlatMapFunction;
-import org.apache.flink.api.common.functions.MapFunction;
-import org.apache.flink.api.common.serialization.SimpleStringEncoder;
-import org.apache.flink.api.java.tuple.Tuple2;
 import org.apache.flink.configuration.ConfigConstants;
 import org.apache.flink.configuration.Configuration;
-import org.apache.flink.core.fs.Path;
 import org.apache.flink.streaming.api.datastream.DataStream;
 import org.apache.flink.streaming.api.environment.StreamExecutionEnvironment;
-import org.apache.flink.streaming.api.functions.sink.filesystem.StreamingFileSink;
 import org.apache.flink.streaming.connectors.twitter.TwitterSource;
 import org.apache.flink.util.Collector;
-
 import java.util.Properties;
 
 /**
@@ -46,6 +39,10 @@ import java.util.Properties;
  * method, change the respective entry in the POM.xml file (simply search for 'mainClass').
  */
 
+/* Code References: 
+ * [1] https://github.com/haseeb1431/twitter-flink-project
+ * [2] https://github.com/aedenj/flink-machine-learning-fish-market-example
+*/
 
 public class StreamingJob {
 
@@ -62,106 +59,45 @@ public class StreamingJob {
 		//Add Twitter API as the Data Source
 		DataStream<String> tweetStream = env.addSource(new TwitterSource(twitterCredentials));
 		
-		//Optional Sink to 
-		final StreamingFileSink<Object> sink = StreamingFileSink
-				.forRowFormat(new Path("C:\\Users\\vpsqu\\OneDrive\\Documents\\Work"), new SimpleStringEncoder<>("UTF-8"))
-				.build();
+		//Optional Sink to File System. Unused.
+//		final StreamingFileSink<Object> sink = StreamingFileSink
+//				.forRowFormat(new Path("C:\\Users\\vpsqu\\OneDrive\\Documents\\Work"), new SimpleStringEncoder<>("UTF-8"))
+//				.build();
 
+		
+		//Flink Transformer Operations on the Tweet object
 		tweetStream
+				//Flatmap to collect input to Tweet object from JSON input by API
 				.flatMap(new TweetParser())
-//				.filter(t-> t.location.contains("India"))
+				
+				//Optional Filter to Enable Location Specific Detection
+				.filter(t-> t.location.contains("United Kingdom"))
+				
+				//Map Function to Pre-Process Tweets: Tokenizing and removal of stopwords
 				.map(new TweetPreProcessor())
+				
+				//Alternative Pre-Processor which uses Spacy Pipeline implemented in the Python file which trains Classification Model
 //				.map(new spacyPreprocessor())
+				
+				//Map Function to run HttpClient which takes tweet text, runs a POST request to the Flask server and returns prediction results
 				.map(new classPredictor())
+				
+				//Filter to return only the Hateful and Offensive Tweets
 				.filter(t -> t.predictedCategory == 1 || t.predictedCategory ==0)
-//				.map(new TweetKeyValue())
-//				.keyBy(new KeySelector<Tuple2<Tweet, Integer>, String>() {
-//					/**
-//					 * ;
-//					 */
-//					private static final long serialVersionUID = 1L;
-//
-//					
-//					public String getKey(Tuple2<Tweet, Integer> tweetIntegerTuple2) throws Exception {
-//						return tweetIntegerTuple2.f0.source;
-//					}
-//				})
-//				.window(TumblingProcessingTimeWindows.of(Time.seconds(10)))
-//				.sum(1)
-				.writeAsText("/temp/test");
+				
+				//Print output to the console
+				.print();
 
-		/*
-		 * Here, you can start creating your execution plan for Flink.
-		 *
-		 * Start with getting some data from the environment, like
-		 * 	env.readTextFile(textPath);
-		 *
-		 * then, transform the resulting DataStream<String> using operations
-		 * like
-		 * 	.filter()
-		 * 	.flatMap()
-		 * 	.join()
-		 * 	.coGroup()
-		 *
-		 * and many more.
-		 * Have a look at the programming guide for the Java API:
-		 *
-		 * http://flink.apache.org/docs/latest/apis/streaming/index.html
-		 *
-		 */
-
-		// execute program
+		
+		// Execute the program
 		env.execute("Flink Streaming Java API Skeleton");
 	}
 
-	public static class TweetFilter implements FilterFunction<Tweet>{
-		/**
-		 * 
-		 */
-		private static final long serialVersionUID = 1816379908445869140L;
-
-		@Override
-		public boolean filter(Tweet value) throws Exception {
-			// TODO Auto-generated method stub
-			
-			return false;
-		}
-	
-	}
-	public static class TweetKeyValue implements MapFunction<Tweet, Tuple2<Tweet, Integer>>{
-
-		/**
-		 * 
-		 */
-		private static final long serialVersionUID = 1L;
-
-		/**
-		 * The mapping method. Takes an element from the input data set and transforms
-		 * it into exactly one element.
-		 *
-		 * @param tweet The input value.
-		 * @return The transformed value
-		 * @throws Exception This method may throw exceptions. Throwing an exception will cause the operation
-		 *                   to fail and may trigger recovery.
-		 */
-		@Override
-		public Tuple2<Tweet, Integer> map(Tweet tweet) throws Exception {
-			return new Tuple2<>(tweet,1);
-		}
-	}
 
 	@SuppressWarnings("serial")
+	//Function to Parse the JSOn String tweets to Tweet object
 	public static class TweetParser implements FlatMapFunction<String, Tweet> {
 
-		/**
-		 * The core method of the FlatMapFunction. Takes an element from the input data set and transforms
-		 * it into zero, one, or more elements.
-		 *
-		 * @param value The input value.
-		 * @param collector   The collector for returning result values.
-		 * @throws Exception This method may throw exceptions. Throwing an exception will cause the operation
-		 *                   to fail and may trigger recovery.
-		 */
 		@Override
 		public void flatMap(String value, Collector<Tweet> collector) throws Exception {
 			Tweet tweet = Tweet.fromString(value);
@@ -171,7 +107,7 @@ public class StreamingJob {
 		}
 	}
 
-
+	//Twitter Credentials
 	private static Properties getTwitterCredentials(){
 		Properties twitterCredentials = new Properties();
 
