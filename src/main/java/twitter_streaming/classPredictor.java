@@ -7,9 +7,8 @@ import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 
 import org.apache.flink.api.common.functions.MapFunction;
-import org.apache.flink.api.java.tuple.Tuple2;
 
-public class classPredictor implements MapFunction<Tweet, Tuple2<Tweet, Integer>> {
+public class classPredictor implements MapFunction<Tweet, Tweet> {
 
 	/**
 	 * 
@@ -17,25 +16,29 @@ public class classPredictor implements MapFunction<Tweet, Tuple2<Tweet, Integer>
 	private static final long serialVersionUID = 1L;
 
 	@Override
-	public Tuple2<Tweet, Integer> map(Tweet tweet) throws Exception, IOException,InterruptedException {
+	public Tweet map(Tweet tweet) throws Exception, IOException,InterruptedException {
 		// TODO Auto-generated method stub
 		String postEndpoint = "http://127.0.0.1:5000/model/";
 		 
-        String inputJson = "{ \"text\":\""+tweet.text+"\" }";
+        String inputJson = "{ \"text\":\""+tweet.processedTweet+"\" }";
  
-        var request = HttpRequest.newBuilder()
+        HttpRequest request = HttpRequest.newBuilder()
             .uri(URI.create(postEndpoint))
             .header("Content-Type", "application/json")
             .POST(HttpRequest.BodyPublishers.ofString(inputJson))
             .build();
  
-        var client = HttpClient.newHttpClient();
+        HttpClient client = HttpClient.newHttpClient();
  
-        var response = client.send(request, HttpResponse.BodyHandlers.ofString());
+        HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
         
-        System.out.println(response.statusCode());
-        System.out.println(response.body());
-		return new Tuple2<>(tweet,1);
+        
+//        System.out.println(response.statusCode());
+        String prediction = response.body();
+        tweet.predictedCategory = Integer.parseInt(prediction.substring(14,15));
+        
+//        System.out.println(response.body());
+		return tweet;
 	}	
 
 }
