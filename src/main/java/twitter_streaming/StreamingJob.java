@@ -17,24 +17,18 @@
  */
 
 package twitter_streaming;
-import twitter_streaming.HttpClientCall;
 import org.apache.flink.api.common.functions.FilterFunction;
 import org.apache.flink.api.common.functions.FlatMapFunction;
 import org.apache.flink.api.common.functions.MapFunction;
 import org.apache.flink.api.common.serialization.SimpleStringEncoder;
-import org.apache.flink.api.java.functions.KeySelector;
 import org.apache.flink.api.java.tuple.Tuple2;
 import org.apache.flink.configuration.ConfigConstants;
 import org.apache.flink.configuration.Configuration;
 import org.apache.flink.core.fs.Path;
 import org.apache.flink.streaming.api.datastream.DataStream;
 import org.apache.flink.streaming.api.environment.StreamExecutionEnvironment;
-import org.apache.flink.streaming.api.functions.sink.SinkFunction;
 import org.apache.flink.streaming.api.functions.sink.filesystem.StreamingFileSink;
-import org.apache.flink.streaming.api.windowing.assigners.TumblingProcessingTimeWindows;
-import org.apache.flink.streaming.api.windowing.time.Time;
 import org.apache.flink.streaming.connectors.twitter.TwitterSource;
-import org.apache.flink.streaming.util.functions.StreamingFunctionUtils;
 import org.apache.flink.util.Collector;
 
 import java.util.Properties;
@@ -51,31 +45,35 @@ import java.util.Properties;
  * <p>If you change the name of the main class (with the public static void main(String[] args))
  * method, change the respective entry in the POM.xml file (simply search for 'mainClass').
  */
+
+
 public class StreamingJob {
 
 	public static void main(String[] args) throws Exception {
-		// set up the streaming execution environment
-		//final StreamExecutionEnvironment env = StreamExecutionEnvironment.getExecutionEnvironment();
-
+		
+		// Set up the streaming execution environment (can be set uo with 
 		Configuration config = new Configuration();
 		config.setBoolean(ConfigConstants.LOCAL_START_WEBSERVER, true);
 		final StreamExecutionEnvironment env = StreamExecutionEnvironment.createLocalEnvironmentWithWebUI(config);
 		
-		//Read the twitter keys from config file, environment variable or ...
+		//Read the twitter keys from config file or environment variable. The values are hardcoded in this particular case.
 		Properties twitterCredentials = getTwitterCredentials();
+		
+		//Add Twitter API as the Data Source
 		DataStream<String> tweetStream = env.addSource(new TwitterSource(twitterCredentials));
 		
+		//Optional Sink to 
 		final StreamingFileSink<Object> sink = StreamingFileSink
 				.forRowFormat(new Path("C:\\Users\\vpsqu\\OneDrive\\Documents\\Work"), new SimpleStringEncoder<>("UTF-8"))
 				.build();
 
-		HttpClientCall.getPrediction();	
-
 		tweetStream
 				.flatMap(new TweetParser())
-				.filter(t -> t.location.contains("United Kingdom"))
+//				.filter(t-> t.location.contains("India"))
 				.map(new TweetPreProcessor())
+//				.map(new spacyPreprocessor())
 				.map(new classPredictor())
+				.filter(t -> t.predictedCategory == 1 || t.predictedCategory ==0)
 //				.map(new TweetKeyValue())
 //				.keyBy(new KeySelector<Tuple2<Tweet, Integer>, String>() {
 //					/**
@@ -90,7 +88,7 @@ public class StreamingJob {
 //				})
 //				.window(TumblingProcessingTimeWindows.of(Time.seconds(10)))
 //				.sum(1)
-				.print();
+				.writeAsText("/temp/test");
 
 		/*
 		 * Here, you can start creating your execution plan for Flink.
