@@ -95,17 +95,17 @@ public class StreamingJob {
 
 
 	@SuppressWarnings("serial")
-	//Function to Parse the JSOn String tweets to Tweet object
-	public static class TweetParser implements FlatMapFunction<String, Tweet> {
-
-		@Override
-		public void flatMap(String value, Collector<Tweet> collector) throws Exception {
-			Tweet tweet = Tweet.fromString(value);
-			if (tweet != null) {
-				collector.collect(tweet);
-			}
-		}
-	}
+//	//Function to Parse the JSOn String tweets to Tweet object
+//	public static class TweetParser implements FlatMapFunction<String, Tweet> {
+//
+//		@Override
+//		public void flatMap(String value, Collector<Tweet> collector) throws Exception {
+//			Tweet tweet = Tweet.fromString(value);
+//			if (tweet != null) {
+//				collector.collect(tweet);
+//			}
+//		}
+//	}
 
 	//Twitter Credentials
 	private static Properties getTwitterCredentials(){
