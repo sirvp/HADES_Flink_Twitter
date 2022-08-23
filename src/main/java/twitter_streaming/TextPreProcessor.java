@@ -12,7 +12,7 @@ import org.terrier.terms.BaseTermPipelineAccessor;
  * and stemming on a text string.
  * 
  * Derived from a TextPreProcessor class provided as utility for COMPSCI5088 Big Data: Systems, Programming and Management Coursework.
- *
+ *@author Richard
  */
 public class TextPreProcessor {
 

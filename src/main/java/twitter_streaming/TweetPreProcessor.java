@@ -1,6 +1,5 @@
 package twitter_streaming;
 
-import java.io.IOException;
 import java.util.List;
 
 import org.apache.flink.api.common.functions.MapFunction;
@@ -8,13 +7,11 @@ import org.apache.flink.api.common.functions.MapFunction;
 
 
 /**
-* This class provides pre-processing for text strings based on the Terrier IR platform.
-* In particular, it provides an out-of-the-box function for performing stopword removal
-* and stemming on a text string.
-* 
-* Derived from a TextPreProcessor class provided as utility for COMPSCI5088 Big Data: Systems, Programming and Management Coursework.
-*
+* Map Function to Pre-Process Tweets using the TextPreProcessor class which uses the Terrier IR Platform.
+* Tokenising and Stopword Removal performed. 
+* Function takes in a Tweet object, processes the tweet text and returns the modified Tweet object
 */
+
 
 public class TweetPreProcessor implements MapFunction<Tweet, Tweet> {
 
@@ -25,20 +22,20 @@ public class TweetPreProcessor implements MapFunction<Tweet, Tweet> {
 	@Override
 	public Tweet map(Tweet tweet) throws Exception{
 		String text = tweet.text;
-//		System.out.println("Pre-processing"+text);
 		
 		if (processor==null) processor = new TextPreProcessor();
+		
+		// Calling the TextPreProcessor constructor to pre-process tweet.text
 		List<String> tokens = processor.process(text);
 		
+		//Converting the tokenised output back into String
 		StringBuilder builder = new StringBuilder();  
 		for (String st : tokens) {  
             builder.append(st);
             builder.append(" ");
         }  
-		
 		tweet.processedTweet =  builder.toString(); 
-
-//		System.out.println(tweet.processedTweet);
+		
 		return tweet;
 	}
 

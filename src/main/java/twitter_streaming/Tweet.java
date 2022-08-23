@@ -7,11 +7,11 @@ import org.apache.flink.shaded.jackson2.com.fasterxml.jackson.core.JsonProcessin
 import org.apache.flink.shaded.jackson2.com.fasterxml.jackson.databind.JsonNode;
 import org.apache.flink.shaded.jackson2.com.fasterxml.jackson.databind.ObjectMapper;
 
+/* Tweet Object to store attributes of tweets obtained from Twitter API
+ * 
+ */
 public class Tweet implements Serializable {
 	
-	 	/**
-	 * 
-	 */
 	private static final long serialVersionUID = 8501833888342582575L;
 	
 		String text;
@@ -34,8 +34,7 @@ public class Tweet implements Serializable {
 
 	        try {
 	            JsonNode node = jsonParser.readValue(s, JsonNode.class);
-	            Boolean isLang = node.has("user") && node.get("user").has("lang");// &&
-	            // !node.get("user").get("lang").asText().equals("null");
+	            Boolean isLang = node.has("user") && node.get("user").has("lang");
 
 	            if(isLang && node.has("text"))
 	            {

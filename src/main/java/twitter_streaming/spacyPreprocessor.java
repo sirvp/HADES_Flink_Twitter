@@ -8,17 +8,26 @@ import java.net.http.HttpResponse;
 
 import org.apache.flink.api.common.functions.MapFunction;
 
+/*
+ * Map Function to Pre-Process Tweets using the Spacy Text Processing Pipeline created for Model Training.
+ * 
+ * Function not used in current iteration.
+ */
+
+
 @SuppressWarnings("serial")
 public class spacyPreprocessor implements MapFunction<Tweet, Tweet> {
 
 	@Override
 	public Tweet map(Tweet tweet) throws Exception,IOException,InterruptedException {
-		// TODO Auto-generated method stub
-
+		
+		//Server URL 
 		String postEndpoint = "http://127.0.0.1:5000/preprocessing/";
-		System.out.println(tweet.processedTweet);
-        String inputJson = "{ \"text\":\""+tweet.processedTweet+"\" }";
+		
+		//Creating input JSON String
+		String inputJson = "{ \"text\":\""+tweet.processedTweet+"\" }";
         
+		//Building HTTP POST Request
         HttpRequest request = HttpRequest.newBuilder()
             .uri(URI.create(postEndpoint))
             .header("Content-Type", "application/json")
@@ -27,12 +36,11 @@ public class spacyPreprocessor implements MapFunction<Tweet, Tweet> {
  
         HttpClient client = HttpClient.newHttpClient();
  
+        //Collecting Response to POST Request
         HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
         
-        
-        System.out.println(response.statusCode());
+        //Obtaining Processed Tweet
         String preprocessedText = response.body();
-        System.out.println(preprocessedText);
         tweet.processedTweet= preprocessedText.substring(16);
 		return tweet;
 	}
