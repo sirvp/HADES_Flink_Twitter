@@ -40,8 +40,8 @@ Main function to be run is written in the <a href = src/main/java/twitter_stream
 ## Credits
 This code was developed with inspiration from various sources on the Internet. Major sources are credited below:
 
-<a href = https://github.com/haseeb1431/twitter-flink-project >haseeb1431/twitter-flink-project</a>  
-<a href = https://github.com/aedenj/flink-machine-learning-fish-market-example/tree/main/model>aedenj/flink-machine-learning-fish-market-example</a>  
-<a href = https://www.blog.duomly.com/python-api-tutorial/>Python API Tutorial</a>  
-<a href = https://techndeck.com/post-request-with-json-using-java-11-httpclient-api/>POST Request with JSON using Java 11 HttpClient API</a>
-
+- <a href = https://github.com/haseeb1431/twitter-flink-project >haseeb1431/twitter-flink-project</a>  
+- <a href = https://github.com/aedenj/flink-machine-learning-fish-market-example/tree/main/model>aedenj/flink-machine-learning-fish-market-example</a>  
+- <a href = https://www.blog.duomly.com/python-api-tutorial/>Python API Tutorial</a>  
+- <a href = https://techndeck.com/post-request-with-json-using-java-11-httpclient-api/>POST Request with JSON using Java 11 HttpClient API</a>  
+- <a href = https://www.baeldung.com/apache-flink>Introduction to Apache Flink with Java</a>
