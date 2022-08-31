@@ -124,8 +124,8 @@ public class Tweet implements Serializable {
 		@Override
 	    public String toString() {
 	        return 
-	            this.userName+";"
-    			+this.text + "; "
-	        	+this.predictedCategory + " ";
+	            "Username: "+ this.userName+"\nTweet: "
+    			+this.text + "\nPredicted Category: "
+	        	+this.predictedCategory + " \n\n";
 	    }
 }
