@@ -17,13 +17,11 @@
  */
 
 package twitter_streaming;
-import org.apache.flink.api.common.functions.FlatMapFunction;
 import org.apache.flink.configuration.ConfigConstants;
 import org.apache.flink.configuration.Configuration;
 import org.apache.flink.streaming.api.datastream.DataStream;
 import org.apache.flink.streaming.api.environment.StreamExecutionEnvironment;
 import org.apache.flink.streaming.connectors.twitter.TwitterSource;
-import org.apache.flink.util.Collector;
 import java.util.Properties;
 
 /**
@@ -83,7 +81,7 @@ public class StreamingJob {
 				.map(new classPredictor())
 				
 				//Filter to return only the Hateful and Offensive Tweets
-				.filter(t -> t.predictedCategory == 1 || t.predictedCategory ==0)
+				.filter(t -> t.predictedCategory ==0 || t.predictedCategory==1)
 				
 				//Print output to the console
 				.print();
@@ -94,27 +92,15 @@ public class StreamingJob {
 	}
 
 
-	@SuppressWarnings("serial")
-//	//Function to Parse the JSOn String tweets to Tweet object
-//	public static class TweetParser implements FlatMapFunction<String, Tweet> {
-//
-//		@Override
-//		public void flatMap(String value, Collector<Tweet> collector) throws Exception {
-//			Tweet tweet = Tweet.fromString(value);
-//			if (tweet != null) {
-//				collector.collect(tweet);
-//			}
-//		}
-//	}
 
 	//Twitter Credentials
 	private static Properties getTwitterCredentials(){
 		Properties twitterCredentials = new Properties();
 
-		twitterCredentials.setProperty(TwitterSource.CONSUMER_KEY, "WWiPJoewF9boFSYoQZUzajl4b");
-		twitterCredentials.setProperty(TwitterSource.CONSUMER_SECRET, "lPTkbCYSzPSRArmYXEeGEDpCnKeRwsrKlf4ndr2ZFOFGC9AYHe");
-		twitterCredentials.setProperty(TwitterSource.TOKEN, "218043079-edIdSIoScbE9hTIu6QhkrafSslweiStLlKIMf0sH");
-		twitterCredentials.setProperty(TwitterSource.TOKEN_SECRET, "4bOHqUKTayAjnbAtmyWdKqwObDRAU4dya95zqYwC4jpIs");
+		twitterCredentials.setProperty(TwitterSource.CONSUMER_KEY, "Consumer_Key");
+		twitterCredentials.setProperty(TwitterSource.CONSUMER_SECRET, "COnsumer-Secret");
+		twitterCredentials.setProperty(TwitterSource.TOKEN, "Token");
+		twitterCredentials.setProperty(TwitterSource.TOKEN_SECRET, "Token_Secret");
 		return  twitterCredentials;
 	}
 }
